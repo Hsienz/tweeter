@@ -1,9 +1,10 @@
 ﻿import Image from "next/image";
-import React from "react";
+import React, {FC, ReactNode, SVGProps} from "react";
+import {poppins} from "~/app/tweeter/layout";
 
 interface Prop {
     text: string
-    Icon: any,
+    Icon: FC<SVGProps<SVGElement>>,
     index:number,
     activeIndex:number
     setActiveIndex:React.Dispatch<React.SetStateAction<number>>
@@ -16,7 +17,7 @@ export default function MainNavButton( {text,Icon,index,activeIndex,setActiveInd
         >
             
             <Icon className={`sm:hidden transition-all duration-500 ` + ( index === activeIndex ? `fill-blue-400` : `fill-[#828282]` ) } />
-            <p className={`sm:block hidden`}>{text}</p>
+            <p className={`sm:block hidden ${poppins.className} font-semibold`}>{text}</p>
         </button>
     )
 } 

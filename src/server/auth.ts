@@ -6,6 +6,7 @@ import {
 } from "next-auth";
 import { type Adapter } from "next-auth/adapters";
 import DiscordProvider from "next-auth/providers/discord";
+import CredentialsProvider from "next-auth/providers/credentials";
 
 import { env } from "~/env";
 import { db } from "~/server/db";
@@ -61,6 +62,22 @@ export const authOptions: NextAuthOptions = {
      *
      * @see https://next-auth.js.org/providers/github
      */
+    CredentialsProvider({
+      name: "Credentials",
+      credentials: {
+        username: {label: "Username", type: "text", placeholder: "johndoe"},
+        email:    {label: "Email", type: "email"},
+        password: {label: "Password", type: "password"},
+      },
+      async authorize(credentials) {
+        if( !credentials ) return null;
+        const user = await db.user.findFirst( {where:{email: credentials.email}})
+        if( user ) {
+          return user
+        }
+        return null;
+      },
+    }),
   ],
 };
 

@@ -14,61 +14,98 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-model Post {
-    id        Int      @id @default(autoincrement())
-    name      String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
-    createdBy   User   @relation(fields: [createdById], references: [id])
-    createdById String
-
-    @@index([name])
-}
-
-// Necessary for Next auth
 model Account {
-    id                       String  @id @default(cuid())
-    userId                   String
-    type                     String
-    provider                 String
-    providerAccountId        String
-    refresh_token            String? // @db.Text
-    access_token             String? // @db.Text
-    expires_at               Int?
-    token_type               String?
-    scope                    String?
-    id_token                 String? // @db.Text
-    session_state            String?
-    user                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-    refresh_token_expires_in Int?
-
-    @@unique([provider, providerAccountId])
-}
-
-model Session {
-    id           String   @id @default(cuid())
-    sessionToken String   @unique
-    userId       String
-    expires      DateTime
-    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    id String @id @default(cuid())
+    email   String @unique
+    provider String
+    user User[]
 }
 
 model User {
-    id            String    @id @default(cuid())
-    name          String?
-    email         String?   @unique
-    emailVerified DateTime?
-    image         String?
-    accounts      Account[]
-    sessions      Session[]
-    posts         Post[]
+    id  String @id @default(cuid())
+    username    String
+    account Account @relation(fields: [email], references: [email], onDelete: Cascade)
+    email String @unique
+    posts Post[]
+    icon String
+    following Follows[] @relation("following")
+    follower Follows[] @relation("follower")
+    @@unique([id, email])
 }
 
-model VerificationToken {
-    identifier String
-    token      String   @unique
-    expires    DateTime
-
-    @@unique([identifier, token])
+model Follows {
+    following User @relation("following", fields: [followingId], references: [id])
+    followingId String
+    followerer User @relation("follower", fields: [followerId], references: [id])
+    followerId String
+    @@id([followingId,followerId])
 }
+
+model Post {
+    id Int @id @default(autoincrement())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    content String
+    createdBy User @relation( fields: [createdById], references: [id], onDelete: Cascade)
+    createdById String
+}
+
+
+// model Post {
+//     id        Int      @id @default(autoincrement())
+//     name      String
+//     createdAt DateTime @default(now())
+//     updatedAt DateTime @updatedAt
+//
+//     createdBy   User   @relation(fields: [createdById], references: [id])
+//     createdById String
+//
+//     @@index([name])
+// }
+//
+// // Necessary for Next auth
+// model Account {
+//     id                       String  @id @default(cuid())
+//     userId                   String
+//     type                     String
+//     provider                 String
+//     providerAccountId        String
+//     refresh_token            String? // @db.Text
+//     access_token             String? // @db.Text
+//     expires_at               Int?
+//     token_type               String?
+//     scope                    String?
+//     id_token                 String? // @db.Text
+//     session_state            String?
+//     user                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+//     refresh_token_expires_in Int?
+//
+//     @@unique([provider, providerAccountId])
+// }
+//
+// model Session {
+//     id           String   @id @default(cuid())
+//     sessionToken String   @unique
+//     userId       String
+//     expires      DateTime
+//     user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+// }
+//
+// model User {
+//     id            String    @id @default(cuid())
+//     name          String?
+//     email         String?   @unique
+//     emailVerified DateTime?
+//     image         String?
+//     accounts      Account[]
+//     sessions      Session[]
+//     posts         Post[]
+// }
+//
+// model VerificationToken {
+//     identifier String
+//     token      String   @unique
+//     expires    DateTime
+//
+//     @@unique([identifier, token])
+// }
