@@ -16,21 +16,30 @@ datasource db {
 
 model Account {
     id String @id @default(cuid())
-    email   String @unique
+    type String
+    userId String
+    providerAccountId String
     provider String
-    user User[]
+    user User @relation( fields: [userId], references: [id], onDelete: Cascade)
+    token_type String?
+    access_token String?
+    refresh_token String?
+    scope String?
+    expires_at Int?
+    @@unique([provider,providerAccountId])
 }
 
 model User {
     id  String @id @default(cuid())
-    username    String
-    account Account @relation(fields: [email], references: [email], onDelete: Cascade)
+    name    String
+    account Account[]
     email String @unique
     posts Post[]
-    icon String
+    image String?
+    emailVerified DateTime?
     following Follows[] @relation("following")
     follower Follows[] @relation("follower")
-    @@unique([id, email])
+    sessions Session[]
 }
 
 model Follows {
@@ -50,6 +59,13 @@ model Post {
     createdById String
 }
 
+model Session {
+    id String @id @default(cuid())
+    userId String
+    sessionToken String @unique
+    expires DateTime
+    user User @relation( fields: [userId], references: [id], onDelete: Cascade)
+}
 
 // model Post {
 //     id        Int      @id @default(autoincrement())
