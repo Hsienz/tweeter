@@ -1,5 +1,5 @@
 ﻿"use client"
-import {poppins} from "~/app/tweeter/layout";
+import {poppins} from "../styles/fonts";
 import Image from "/public/image.svg"
 import Public from "/public/public.svg"
 import Group from "/public/group.svg"

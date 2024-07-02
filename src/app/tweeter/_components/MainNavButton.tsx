@@ -1,6 +1,6 @@
 ﻿import Image from "next/image";
 import React, {FC, ReactNode, SVGProps} from "react";
-import {poppins} from "~/app/tweeter/layout";
+import {poppins} from "../styles/fonts";
 
 interface Prop {
     text: string

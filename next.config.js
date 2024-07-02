@@ -8,6 +8,7 @@ await import("./src/env.js");
 const config = {
     webpack(config) {
         // Grab the existing rule that handles SVG imports
+        // @ts-ignore
         const fileLoaderRule = config.module.rules.find((rule) =>
             rule.test?.test?.('.svg'),
         )
