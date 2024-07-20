@@ -20,7 +20,8 @@ export default async function TweeterPage() {
                 </div>
                 <div className={`flex flex-col sm:flex-col-reverse h-full`}>
                     <div className={`w-11/12 max-w-[745px] mx-auto`}>
-                        <Posts/>
+                        { /*@ts-ignore*/ }
+                        <Posts user={{...session.user, emailVerified: null}}/>
                     </div>
                     
                     <div className={`sm:hidden mt-auto h-20`}>

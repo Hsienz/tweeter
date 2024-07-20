@@ -1,10 +1,6 @@
-import { z } from "zod";
+import {z} from "zod";
 
-import {
-  createTRPCRouter,
-  protectedProcedure,
-  publicProcedure,
-} from "~/server/api/trpc";
+import {createTRPCRouter, protectedProcedure,} from "~/server/api/trpc";
 
 const procedures = {
   /*
@@ -43,13 +39,19 @@ const procedures = {
   
    */
     getSelfPost: protectedProcedure.query(async ({ctx})=>{
-        const user = await ctx.db.user.findFirst({where:{id:ctx.session.user.id},include:{posts:true}}) // how to call this
-        return user ? user.posts : []
+        return ctx.db.post.findMany({
+            where: {createdById: ctx.session.user.id},
+            include: {createdBy: true},
+            orderBy: {createdAt: "desc"}
+        });
     }),
   getAllPost: protectedProcedure.input( z.object({ userId: z.string() }))
       .query(async ({ctx,input})=>{
-          const user = await ctx.db.user.findFirst({where:{id:input.userId}, include:{posts:true}})
-          return user ? user.posts : []
+        return ctx.db.post.findMany({
+            where: {createdById: input.userId},
+            include: {createdBy: true},
+            orderBy: {createdAt: "desc"}
+        });
   }),
   getFollowingUserPost: protectedProcedure.query(async ({ctx})=>{
       const user = await ctx.db.user.findFirst(
