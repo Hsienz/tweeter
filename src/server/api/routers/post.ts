@@ -83,6 +83,13 @@ const procedures = {
             },
         });
     }),
-    
+    getPost: protectedProcedure.input(z.object(
+        {
+            id:z.preprocess(Number, z.number())
+        }
+        )
+    ).query(async ({input, ctx}) =>{
+        return ctx.db.post.findFirst({where:{id:input.id}})
+    }),
 };
 export const postRouter = createTRPCRouter( procedures )

@@ -5,18 +5,29 @@ import PostTextArea from "~/app/tweeter/_components/PostTextArea";
 import {api} from "~/trpc/react";
 import TestButton from "~/app/tweeter/_components/TestButton";
 import Posts from "~/app/tweeter/_components/Posts";
+import {getServerAuthSession} from "~/server/auth";
 
-export default function TweeterPage() {
+export default async function TweeterPage() {
+    const session = await getServerAuthSession()
     return (
-        <div className={`h-screen relative flex flex-col bg-background_gray`}>
-            <TopBanner/>
-            <div className={`w-11/12 max-w-[745px] mx-auto mt-6`}>
-                <PostTextArea/>
+        <div className={`h-fit h-min-screen relative flex flex-col bg-background_gray`}>
+            <div>
+                <TopBanner/>
             </div>
-            <div className={`sm:hidden mt-auto h-20`}>
-                <MainNav/>
+            <div className={`mt-8`}>
+                <div className={`w-11/12 max-w-[745px] mx-auto`}>
+                    <PostTextArea image={ session?.user.image || ""}/>
+                </div>
+                <div className={`flex flex-col sm:flex-col-reverse h-full`}>
+                    <div className={`w-11/12 max-w-[745px] mx-auto`}>
+                        <Posts/>
+                    </div>
+                    
+                    <div className={`sm:hidden mt-auto h-20`}>
+                        <MainNav/>
+                    </div>
+                </div>
             </div>
-            <Posts/>
         </div>
     );
 }

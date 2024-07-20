@@ -1,51 +1,73 @@
 ﻿"use client"
 import {poppins} from "../styles/fonts";
-import Image from "/public/image.svg"
+import IconImage from "/public/image.svg"
+import Image from "next/image";
 import Public from "/public/public.svg"
 import Group from "/public/group.svg"
 import {useState} from "react";
-export default function PostTextArea( ) {
-    enum ReplyType {
-        everyone,
-        follow
-    }
+import {api} from "~/trpc/react";
+import {ReplyType} from "@prisma/client";
+
+interface Prop {
+    image : string
+}
+export default function PostTextArea( {image} : Prop) {
+    const apiUtils = api.useUtils()
     
-    const [replyType, setReplyType] = useState(ReplyType.everyone)
+    const [replyType, setReplyType] = useState<ReplyType>(ReplyType.Everyone)
+    
+    const [postContent,setPostContent] = useState("");
+    
+    const postCreateMutation = api.post.post.useMutation({
+        onSuccess() {
+            console.log("Post Success")
+            apiUtils.post.invalidate()
+        },
+        
+    })
+    
+    const OnClickTweetButton = () => {
+        postCreateMutation.mutate({content: postContent})
+        setPostContent("")
+    }
     
     return (
         <div className={`w-full h-full rounded-xl bg-white p-4`}>
-            <h3 className={`text-sm font-semibold ${poppins.className}`}>Tweet something</h3>
+            <h3 className={`text-xs font-semibold ${poppins.className}`}>Tweet something</h3>
             <div className={`h-[1px] bg-break_gray my-2`}/>
 
             <div className={`flex`}>
 
                 <div className={`flex flex-col w-full`}>
-                    <textarea
-                        placeholder={`What's happening?`}
-                        className={`resize-none w-full h-full`}
-                        rows={2}
-                    />
-                    <div className={`flex text-icon_blue text-xs `}>
+                    <div className={`flex`}>
+                        <Image src={image} alt={"user image"} width={40} height={40} className={`rounded-md mb-auto`} />
+                        <textarea
+                            placeholder={`What's happening?`}
+                            className={`resize-none w-full h-full outline-none ml-4`}
+                            rows={3}
+                            value={postContent}
+                            onChange={(e)=>setPostContent(e.target.value)}
+                        />
+                    </div>
+                    <div className={`flex text-icon_blue text-xs gap-x-2`}>
                         <button>
-                            <Image className={`fill-icon_blue`}/>
+                            <IconImage className={`fill-icon_blue`}/>
                         </button>
-                        {replyType === ReplyType.everyone &&
-                            <button className={'flex'}>
-                                <Public className={`w-5 h-5 my-auto fill-icon_blue`}/>
-                                <p className={`my-auto`}>Everyone can reply</p>
-                            </button>
-                            
+                        {replyType === ReplyType.Everyone &&
+                                <button className={'flex gap-x-2'} onClick={()=>{setReplyType(ReplyType.Follow)}}>
+                                    <Public className={`w-5 h-5 my-auto fill-icon_blue`}/>
+                                    <p className={`my-auto`}>Everyone can reply</p>
+                                </button>
                         }
-                        {
-                            replyType === ReplyType.follow &&
-                            <button className={'flex'}>
-                                <Group className={`w-5 h-5 my-auto fill-icon_blue`}/>
-                                <p className={`my-auto`}>Only people you follow can reply</p>
-                            </button>
+
+                        {replyType === ReplyType.Follow &&
+                        <button className={'flex gap-x-2'} onClick={()=>{setReplyType(ReplyType.Everyone)}}>
+                            <Group className={`w-5 h-5 my-auto fill-icon_blue`}/>
+                            <p className={`my-auto`}>Only people you follow can reply</p>
+                        </button>
                         }
-                        
-                        
-                        <button className={`ml-auto rounded-md bg-icon_blue text-white p-2`}>
+
+                        <button className={`ml-auto rounded-md bg-icon_blue text-white p-2`} onClick={OnClickTweetButton}>
                             Tweet
                         </button>
                     </div>

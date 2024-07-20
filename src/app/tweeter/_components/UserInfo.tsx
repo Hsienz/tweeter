@@ -1,16 +1,16 @@
-﻿import {getSession, signIn, useSession} from "next-auth/react";
-import {getServerAuthSession} from "~/server/auth";
-import SignInButton from "~/app/tweeter/_components/SignInButton";
+﻿"use client"
+import Image from "next/image";
+import {signOut} from "next-auth/react";
 
-export default async function UserInfo() {
-    const session = await getServerAuthSession();
+interface Prop {
+    name : string,
+    image : string,
+}
+export default function UserInfo({name,image}:Prop) {
     return (
-        <div className={`h-full`}>
-            {!session ?
-                <SignInButton/>
-                :
-                <h1>User Info</h1>
-            }
-        </div>
+            <button className={`flex`} onClick={()=>signOut()}>
+                <Image src={image} alt={"user image"} width={32} height={32} className={`rounded-md`} />
+                <span className={`hidden sm:block text-center ml-2 my-auto`}>{name}</span>
+            </button>
     )
 }

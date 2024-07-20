@@ -1,11 +1,18 @@
-﻿import {getServerAuthSession} from "~/server/auth";
+﻿"use client"
+import {api} from "~/trpc/react";
+import Post from "~/app/tweeter/_components/Post";
+import {useEffect} from "react";
+import {useRouter} from "next/navigation";
 
-export default async function Posts() {
-    const session = await getServerAuthSession()
+export default function Posts() {
+    const router = useRouter()
+    const getSelfPostQuery = api.post.getSelfPost.useQuery()
+    useEffect(()=>{
+        console.log("effect")
+    },[router])
     return (
-        <div>
-            <h1>Posts</h1>
-            {session?<p>Logged in</p> : <p>Not logged in</p>}
+        <div className={`flex flex-col gap-y-6 my-6`}>
+            {getSelfPostQuery.data?.map( x=>{ return <Post postId={x.id} />})}
         </div>
     )
 }
