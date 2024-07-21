@@ -3,7 +3,7 @@ import {ChangeEvent, useRef, useState} from "react"
 import type {User} from "@prisma/client"
 import Image from "next/image";
 interface Prop {
-    user: User
+    user?: User
 }
 export default function PostComment({user}:Prop) {
     const [commentValue, setCommentValue] = useState("")

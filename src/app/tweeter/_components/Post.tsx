@@ -15,7 +15,7 @@ type PostDataType = Prisma.PostGetPayload<{
 }>
     
 interface Prop {
-    user: User
+    user?: User
     postData: PostDataType
 }
 function Post( {user, postData}:Prop ) {

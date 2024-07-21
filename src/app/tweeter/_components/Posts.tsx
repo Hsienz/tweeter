@@ -5,7 +5,7 @@ import {useEffect} from "react";
 import {useRouter} from "next/navigation";
 import type {User} from "@prisma/client"
 interface Prop {
-    user: User
+    user?: User
 }
 export default function Posts({user}:Prop) {
     const router = useRouter()
