@@ -7,6 +7,7 @@ import Group from "/public/group.svg"
 import {useState} from "react";
 import {api} from "~/trpc/react";
 import {ReplyType} from "@prisma/client";
+import UploadImageButton from "~/app/tweeter/_components/UploadImageButton";
 
 interface Prop {
     image : string
@@ -50,9 +51,7 @@ export default function PostTextArea( {image} : Prop) {
                         />
                     </div>
                     <div className={`flex text-icon_blue text-xs gap-x-2`}>
-                        <button>
-                            <IconImage className={`fill-icon_blue`}/>
-                        </button>
+                        <UploadImageButton iconClassName={`fill-icon_blue`}/>
                         {replyType === ReplyType.Everyone &&
                                 <button className={'flex gap-x-2'} onClick={()=>{setReplyType(ReplyType.Follow)}}>
                                     <Public className={`w-5 h-5 my-auto fill-icon_blue`}/>

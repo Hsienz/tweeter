@@ -8,6 +8,10 @@ import Retweet from "/public/retweet.svg"
 import Bookmark from "/public/bookmark.svg"
 import type {User} from "@prisma/client";
 import PostComment from "~/app/tweeter/_components/PostComment";
+import CommentFunctionButton from "~/app/tweeter/_components/PostFunctionalButton/CommentFunctionButton";
+import RetweetFunctionButton from "~/app/tweeter/_components/PostFunctionalButton/RetweetFunctionButton";
+import LikeFunctionButton from "~/app/tweeter/_components/PostFunctionalButton/LikeFunctionButton";
+import BookmarkFunctionButton from "~/app/tweeter/_components/PostFunctionalButton/BookmarkFunctionButton";
 type PostDataType = Prisma.PostGetPayload<{
     include: {
         createdBy: true
@@ -36,10 +40,14 @@ function Post( {user, postData}:Prop ) {
 
             <hr className={`h-[1px] bg-break_gray my-2`}/>
             <div className={`flex justify-around my-2`}>
-                <Comment />
-                <Retweet />
-                <Love />
-                <Bookmark />
+                {/*<Comment />*/}
+                {/*<Retweet />*/}
+                {/*<Love />*/}
+                {/*<Bookmark />*/}
+                <CommentFunctionButton/>
+                <RetweetFunctionButton/>
+                <LikeFunctionButton/>
+                <BookmarkFunctionButton/>
             </div>
             <hr className={`h-[1px] bg-break_gray my-2`}/>
             <PostComment user={user}/>
