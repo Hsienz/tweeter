@@ -1,43 +1,17 @@
 import {z} from "zod";
 
-import {createTRPCRouter, protectedProcedure,} from "~/server/api/trpc";
+import {createTRPCRouter, protectedProcedure, publicProcedure,} from "~/server/api/trpc";
+import {PutObjectCommand, S3Client} from "@aws-sdk/client-s3";
+import {v4 as uuid} from "uuid"
+const s3 = new S3Client([{
+    region: process.env.AWS_REGION,
+    credentials:{
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
+    }
+}])
 
 const procedures = {
-  /*
-  hello: publicProcedure
-    .input(z.object({ text: z.string() }))
-    .query(({ input }) => {
-      return {
-        greeting: `Hello ${input.text}`,
-      };
-    }),
-
-  create: protectedProcedure
-    .input(z.object({ name: z.string().min(1) }))
-    .mutation(async ({ ctx, input }) => {
-      // simulate a slow db call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      return ctx.db.post.create({
-        data: {
-          name: input.name,
-          createdBy: { connect: { id: ctx.session.user.id } },
-        },
-      });
-    }),
-
-  getLatest: protectedProcedure.query(({ ctx }) => {
-    return ctx.db.post.findFirst({
-      orderBy: { createdAt: "desc" },
-      where: { createdBy: { id: ctx.session.user.id } },
-    });
-  }),
-
-  getSecretMessage: protectedProcedure.query(() => {
-    return "you can now see this secret message!";
-  }),
-  
-   */
     getSelfPost: protectedProcedure.query(async ({ctx})=>{
         return ctx.db.post.findMany({
             where: {createdById: ctx.session.user.id},
@@ -77,11 +51,26 @@ const procedures = {
               return a.createdAt.getSeconds() - b.createdAt.getSeconds()
           });
   }),
-    post: protectedProcedure.input(z.object({content: z.string().min(1).max(150)})).mutation(async ({ ctx, input }) => {
+    post: protectedProcedure.input(z.object(
+        {
+            content: z.string().min(1).max(150), 
+            files: z.string().array()
+        })).mutation(async ({ ctx, input }) => {
+        const filenames = await Promise.all( input.files.map( x=>{
+            const filename = uuid() + ".png"
+            const command = new PutObjectCommand({
+                Bucket: process.env.AWS_BUCKET_NAME,
+                Key: filename,
+                Body: x
+            })
+            s3.send(command)
+            return filename
+        }))
         return ctx.db.post.create({
             data: {
                 createdBy: { connect: { id: ctx.session.user.id } },
-                content: input.content
+                content: input.content,
+                files: filenames
             },
         });
     }),
@@ -122,6 +111,11 @@ const procedures = {
             }
         })
     }),
+    
+    getLikeCount: publicProcedure.input(z.object({postId:z.preprocess(Number,z.number())})).query(async({ctx,input})=>{
+        return ctx.db.likeInfo.count({where:{postId:input.postId}})
+    }),
+    
     save: protectedProcedure.input(z.object({postId:z.preprocess(Number,z.number())})).mutation(async ({ctx,input})=>{
         return ctx.db.saveInfo.create({
             data: {
@@ -151,6 +145,11 @@ const procedures = {
             }
         })
     }),
+    
+    getSaveCount: publicProcedure.input(z.object({postId:z.preprocess(Number,z.number())})).query(async({ctx,input})=>{
+        return ctx.db.saveInfo.count({where:{postId:input.postId}})
+    }),
+
     retweet: protectedProcedure.input(z.object({postId:z.preprocess(Number,z.number())})).mutation(async ({ctx,input})=>{
         return ctx.db.retweetInfo.create({
             data: {
@@ -179,6 +178,14 @@ const procedures = {
                 }
             }
         })
+    }),
+    
+    getRetweetCount: publicProcedure.input(z.object({postId:z.preprocess(Number,z.number())})).query(async({ctx,input})=>{
+        return ctx.db.retweetInfo.count({where:{postId:input.postId}})
+    }),
+    
+    getCommentCount: publicProcedure.input(z.object({postId:z.preprocess(Number,z.number())})).query(async({ctx,input})=>{
+        return ctx.db.post.count({where:{parentId:input.postId}})
     }),
 };
 export const postRouter = createTRPCRouter( procedures )

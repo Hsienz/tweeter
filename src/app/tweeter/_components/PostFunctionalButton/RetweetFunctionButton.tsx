@@ -7,16 +7,21 @@ interface Prop {
 export default function RetweetFunctionButton({postId}:Prop) {
     const apiUtils = api.useUtils()
 
+    const UpdateDBValueOnPage = () => {
+        apiUtils.post.getRetweetInfo.invalidate({postId:postId})
+        apiUtils.post.getRetweetCount.invalidate({postId:postId})
+
+    }
+    const getRetweetInfoQuery = api.post.getRetweetInfo.useQuery({postId})
+
     const createRetweetInfoMutation = api.post.retweet.useMutation({
         onSuccess: ()=>{
-            apiUtils.post.getRetweetInfo.invalidate({postId:postId})
+            UpdateDBValueOnPage()
         }
     })
-
-    const getRetweetInfoQuery = api.post.getRetweetInfo.useQuery({postId})
     const deleteRetweetInfoMutation = api.post.deleteRetweetInfo.useMutation({
         onSuccess: () => {
-            apiUtils.post.getSaveInfo.invalidate({postId:postId})
+            UpdateDBValueOnPage()
         }
     })
     const handleOnEnable = async () => {

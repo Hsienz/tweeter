@@ -7,16 +7,20 @@ interface Prop {
 export default function BookmarkFunctionButton({postId}:Prop) {
     const apiUtils = api.useUtils()
 
+    const updateDBValueOnPage = () => {
+        apiUtils.post.getSaveInfo.invalidate({postId:postId})
+        apiUtils.post.getSaveCount.invalidate({postId:postId})
+    }
+
     const createSaveInfoMutation = api.post.save.useMutation({
         onSuccess: ()=>{
-            apiUtils.post.getSaveInfo.invalidate({postId:postId})
+            updateDBValueOnPage()
         }
     })
-
     const getSaveInfoQuery = api.post.getSaveInfo.useQuery({postId})
     const deleteSaveInfoMutation = api.post.deleteSaveInfo.useMutation({
         onSuccess: () => {
-            apiUtils.post.getSaveInfo.invalidate({postId:postId})
+            updateDBValueOnPage()
         }
     })
     const handleOnEnable = async () => {

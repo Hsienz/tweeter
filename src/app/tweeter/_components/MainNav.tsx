@@ -8,7 +8,7 @@ import Bookmark from "/public/bookmark.svg"
 export default function MainNav() {
     const [activeButton, setActiveButton] = useState(0);
     return (
-        <div className={`flex justify-around h-full w-full`}>
+        <div className={`flex justify-around h-full w-full bg-white`}>
             <MainNavButton Icon={Home} text={`Home`} index={0} activeIndex={activeButton} setActiveIndex={setActiveButton}/>
             <MainNavButton Icon={Explore} text={`Explore`} index={1} activeIndex={activeButton} setActiveIndex={setActiveButton}/>
             <MainNavButton Icon={Bookmark} text={`Bookmarks`} index={2} activeIndex={activeButton} setActiveIndex={setActiveButton}/>

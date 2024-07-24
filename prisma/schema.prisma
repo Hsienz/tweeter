@@ -72,6 +72,8 @@ replyType ReplyType @default(Everyone)
     likedUsers LikeInfo[]
     retweetUserd RetweetInfo[]
     
+    files String[]
+    
 parentId Int?
 parent Post? @relation("CommentOwner", fields: [parentId], references: [id])
 comments Post[] @relation("CommentOwner")

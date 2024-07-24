@@ -1,6 +1,5 @@
 ﻿"use client"
 import {poppins} from "../styles/fonts";
-import IconImage from "/public/image.svg"
 import Image from "next/image";
 import Public from "/public/public.svg"
 import Group from "/public/group.svg"
@@ -8,6 +7,7 @@ import {useState} from "react";
 import {api} from "~/trpc/react";
 import {ReplyType} from "@prisma/client";
 import UploadImageButton from "~/app/tweeter/_components/UploadImageButton";
+import {uploadFiles} from "~/app/utils/s3/upload";
 
 interface Prop {
     image : string
@@ -19,17 +19,20 @@ export default function PostTextArea( {image} : Prop) {
     
     const [postContent,setPostContent] = useState("");
     
+    const [files,setFiles] = useState<File[]>([])
+    
     const postCreateMutation = api.post.post.useMutation({
         onSuccess() {
             console.log("Post Success")
-            apiUtils.post.invalidate()
+            apiUtils.post.getSelfPost.invalidate()
         },
         
     })
-    
-    const OnClickTweetButton = () => {
-        postCreateMutation.mutate({content: postContent})
+
+    const OnClickTweetButton = async () => {
+        postCreateMutation.mutate({content: postContent, files: await Promise.all( files.map(async (x)=> await x.text()))})
         setPostContent("")
+        setFiles([])
     }
     
     return (
@@ -51,16 +54,16 @@ export default function PostTextArea( {image} : Prop) {
                         />
                     </div>
                     <div className={`flex text-icon_blue text-xs gap-x-2`}>
-                        <UploadImageButton iconClassName={`fill-icon_blue`}/>
+                        <UploadImageButton setFiles={setFiles} iconClassName={`fill-icon_blue`}/>
                         {replyType === ReplyType.Everyone &&
-                                <button className={'flex gap-x-2'} onClick={()=>{setReplyType(ReplyType.Follow)}}>
+                                <button className={'flex gap-x-2 px-2'} onClick={()=>{setReplyType(ReplyType.Follow)}}>
                                     <Public className={`w-5 h-5 my-auto fill-icon_blue`}/>
                                     <p className={`my-auto`}>Everyone can reply</p>
                                 </button>
                         }
 
                         {replyType === ReplyType.Follow &&
-                        <button className={'flex gap-x-2'} onClick={()=>{setReplyType(ReplyType.Everyone)}}>
+                        <button className={'flex gap-x-2 px-2'} onClick={()=>{setReplyType(ReplyType.Everyone)}}>
                             <Group className={`w-5 h-5 my-auto fill-icon_blue`}/>
                             <p className={`my-auto`}>Only people you follow can reply</p>
                         </button>

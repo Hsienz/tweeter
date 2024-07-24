@@ -9,16 +9,20 @@ export default function LikeFunctionButton({postId}:Prop) {
 
     const apiUtils = api.useUtils()
 
+    const updateDBValueOnPage = () => {
+        apiUtils.post.getLikeInfo.invalidate({postId:postId})
+        apiUtils.post.getLikeCount.invalidate({postId:postId})
+    }
     const createLikeInfoMutation = api.post.like.useMutation({
         onSuccess: ()=>{
-            apiUtils.post.getLikeInfo.invalidate({postId:postId})
+            updateDBValueOnPage()
         }
     })
 
     const getLikeInfoQuery = api.post.getLikeInfo.useQuery({postId})
     const deleteLikeInfoMutation = api.post.deleteLikeInfo.useMutation({
         onSuccess: () => {
-            apiUtils.post.getLikeInfo.invalidate({postId:postId})
+            updateDBValueOnPage();
         }
     })
     const handleOnEnable = async () => {
