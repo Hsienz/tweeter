@@ -1,17 +1,24 @@
 ﻿import PostFunctionButtonBase from "~/app/tweeter/_components/PostFunctionalButton/PostFunctionButtonBase";
 import Comment from "/public/comment.svg"
-export default function CommentFunctionButton() {
-    const onEnable = () => {
-        
+import {useState} from "react";
+
+interface Prop {
+    postId: number
+}
+export default function CommentFunctionButton({postId}:Prop) {
+    const [isEnable, setIsEnable] = useState(false)
+    const handleOnEnable = () => {
+        setIsEnable(false);
     }
-    const onDisable = () => {
-        
+    const handleOnDisable = () => {
+        setIsEnable(true);
     }
     return (
         <PostFunctionButtonBase 
             Icon={Comment} 
-            onEnable={onEnable} 
-            onDisable={onDisable} 
+            isEnable={isEnable}
+            handleOnEnable={handleOnEnable} 
+            handleOnDisable={handleOnDisable} 
             textDisable={`Comment`} 
             textEnable={`Comment`} 
             textClassNameEnable={``} 

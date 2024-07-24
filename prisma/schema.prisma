@@ -45,6 +45,10 @@ emailVerified DateTime?
 following Follows[] @relation("following")
 follower Follows[] @relation("follower")
 sessions Session[]
+    
+    savedPost SaveInfo[]
+    likedPost LikeInfo[]
+    retweetPost RetweetInfo[]
 }
 
 model Follows {
@@ -63,6 +67,14 @@ content String
 createdBy User @relation( fields: [createdById], references: [id], onDelete: Cascade)
 createdById String
 replyType ReplyType @default(Everyone)
+    
+    savedUsers SaveInfo[]
+    likedUsers LikeInfo[]
+    retweetUserd RetweetInfo[]
+    
+parentId Int?
+parent Post? @relation("CommentOwner", fields: [parentId], references: [id])
+comments Post[] @relation("CommentOwner")
 }
 
 model Session {
@@ -73,6 +85,30 @@ expires DateTime
 user User @relation( fields: [userId], references: [id], onDelete: Cascade)
 }
 
+model SaveInfo {
+    postId Int
+    post Post @relation( fields: [postId],references: [id])
+
+    userId String
+    user User @relation(fields: [userId],references: [id])
+    @@id([userId,postId])
+}
+model LikeInfo {
+    postId Int
+    post Post @relation( fields: [postId],references: [id])
+    
+    userId String
+    user User @relation(fields: [userId],references: [id])
+    @@id([userId, postId])
+}
+model RetweetInfo {
+    postId Int
+    post Post @relation( fields: [postId],references: [id])
+    
+    userId String
+    user User @relation(fields: [userId],references: [id])
+    @@id([userId,postId])
+}
 // model Post {
 //     id        Int      @id @default(autoincrement())
 //     name      String

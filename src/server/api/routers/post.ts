@@ -93,5 +93,92 @@ const procedures = {
     ).query(async ({input, ctx}) =>{
         return ctx.db.post.findFirst({where:{id:input.id}})
     }),
+    like: protectedProcedure.input(z.object({postId:z.preprocess(Number,z.number())})).mutation(async ({ctx,input})=>{
+        return ctx.db.likeInfo.create({
+            data: {
+                postId: input.postId,
+                userId: ctx.session.user.id
+            }
+        })
+    }),
+
+    getLikeInfo: protectedProcedure.input(z.object({postId:z.preprocess(Number,z.number())})).query(async ({ctx,input})=>{
+        return ctx.db.likeInfo.findFirst({
+            where: {
+                userId: ctx.session.user.id,
+                postId: input.postId
+            }
+        })
+    }),
+    
+
+    deleteLikeInfo: protectedProcedure.input(z.object({postId:z.preprocess(Number,z.number())})).mutation(async ({ctx,input})=>{
+        await ctx.db.likeInfo.delete({
+            where: {
+                userId_postId: {
+                    userId: ctx.session.user.id,
+                    postId: input.postId
+                }
+            }
+        })
+    }),
+    save: protectedProcedure.input(z.object({postId:z.preprocess(Number,z.number())})).mutation(async ({ctx,input})=>{
+        return ctx.db.saveInfo.create({
+            data: {
+                postId: input.postId,
+                userId: ctx.session.user.id
+            }
+        })
+    }),
+
+    getSaveInfo: protectedProcedure.input(z.object({postId:z.preprocess(Number,z.number())})).query(async ({ctx,input})=>{
+        return ctx.db.saveInfo.findFirst({
+            where: {
+                userId: ctx.session.user.id,
+                postId: input.postId
+            }
+        })
+    }),
+
+
+    deleteSaveInfo: protectedProcedure.input(z.object({postId:z.preprocess(Number,z.number())})).mutation(async ({ctx,input})=>{
+        await ctx.db.saveInfo.delete({
+            where: {
+                userId_postId: {
+                    userId: ctx.session.user.id,
+                    postId: input.postId
+                }
+            }
+        })
+    }),
+    retweet: protectedProcedure.input(z.object({postId:z.preprocess(Number,z.number())})).mutation(async ({ctx,input})=>{
+        return ctx.db.retweetInfo.create({
+            data: {
+                postId: input.postId,
+                userId: ctx.session.user.id
+            }
+        })
+    }),
+
+    getRetweetInfo: protectedProcedure.input(z.object({postId:z.preprocess(Number,z.number())})).query(async ({ctx,input})=>{
+        return ctx.db.retweetInfo.findFirst({
+            where: {
+                userId: ctx.session.user.id,
+                postId: input.postId
+            }
+        })
+    }),
+
+
+    deleteRetweetInfo: protectedProcedure.input(z.object({postId:z.preprocess(Number,z.number())})).mutation(async ({ctx,input})=>{
+        await ctx.db.retweetInfo.delete({
+            where: {
+                userId_postId: {
+                    userId: ctx.session.user.id,
+                    postId: input.postId
+                }
+            }
+        })
+    }),
 };
 export const postRouter = createTRPCRouter( procedures )

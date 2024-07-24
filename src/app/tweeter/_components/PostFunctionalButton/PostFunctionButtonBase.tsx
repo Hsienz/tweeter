@@ -4,17 +4,16 @@ interface Prop {
     Icon: FC<SVGProps<SVGElement>>,
     textDisable: string,
     textEnable: string
-    onEnable: Function,
-    onDisable: Function,
+    handleOnEnable: Function,
+    handleOnDisable: Function,
     iconClassNameEnable: string
     textClassNameEnable: string
+    isEnable: boolean
 }
-export default function PostFunctionButtonBase({Icon,textDisable,textEnable,onEnable,onDisable,iconClassNameEnable,textClassNameEnable}:Prop) {
-    const [isEnable,setIsEnable] = useState(false);
+export default function PostFunctionButtonBase({Icon,isEnable,textDisable,textEnable,handleOnEnable,handleOnDisable,iconClassNameEnable,textClassNameEnable}:Prop) {
     const handleOnClick = ()=>{
-        setIsEnable(!isEnable);
-        if(isEnable) onEnable();
-        else onDisable();
+        if(isEnable) handleOnDisable();
+        else handleOnEnable();
     }
     return (
         <button onClick={handleOnClick} className={`basis-0 flex-grow py-2 rounded-md hover:bg-background_gray flex gap-x-2 justify-center justify-items-center`}>

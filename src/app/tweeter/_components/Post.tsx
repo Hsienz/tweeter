@@ -12,6 +12,7 @@ import CommentFunctionButton from "~/app/tweeter/_components/PostFunctionalButto
 import RetweetFunctionButton from "~/app/tweeter/_components/PostFunctionalButton/RetweetFunctionButton";
 import LikeFunctionButton from "~/app/tweeter/_components/PostFunctionalButton/LikeFunctionButton";
 import BookmarkFunctionButton from "~/app/tweeter/_components/PostFunctionalButton/BookmarkFunctionButton";
+import {postRouter} from "~/server/api/routers/post";
 type PostDataType = Prisma.PostGetPayload<{
     include: {
         createdBy: true
@@ -44,10 +45,10 @@ function Post( {user, postData}:Prop ) {
                 {/*<Retweet />*/}
                 {/*<Love />*/}
                 {/*<Bookmark />*/}
-                <CommentFunctionButton/>
-                <RetweetFunctionButton/>
-                <LikeFunctionButton/>
-                <BookmarkFunctionButton/>
+                <CommentFunctionButton postId={postData.id}/>
+                <RetweetFunctionButton postId={postData.id}/>
+                <LikeFunctionButton postId={postData.id}/>
+                <BookmarkFunctionButton postId={postData.id}/>
             </div>
             <hr className={`h-[1px] bg-break_gray my-2`}/>
             <PostComment user={user}/>
