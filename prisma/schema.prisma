@@ -89,26 +89,26 @@ user User @relation( fields: [userId], references: [id], onDelete: Cascade)
 
 model SaveInfo {
     postId Int
-    post Post @relation( fields: [postId],references: [id])
+    post Post @relation( fields: [postId],references: [id],onDelete: Cascade)
 
     userId String
-    user User @relation(fields: [userId],references: [id])
+    user User @relation(fields: [userId],references: [id],onDelete: Cascade)
     @@id([userId,postId])
 }
 model LikeInfo {
     postId Int
-    post Post @relation( fields: [postId],references: [id])
+    post Post @relation( fields: [postId],references: [id],onDelete: Cascade)
     
     userId String
-    user User @relation(fields: [userId],references: [id])
+    user User @relation(fields: [userId],references: [id],onDelete: Cascade)
     @@id([userId, postId])
 }
 model RetweetInfo {
     postId Int
-    post Post @relation( fields: [postId],references: [id])
+    post Post @relation( fields: [postId],references: [id],onDelete: Cascade)
     
     userId String
-    user User @relation(fields: [userId],references: [id])
+    user User @relation(fields: [userId],references: [id],onDelete: Cascade)
     @@id([userId,postId])
 }
 // model Post {

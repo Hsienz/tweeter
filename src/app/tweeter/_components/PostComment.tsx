@@ -2,7 +2,6 @@
 import {ChangeEvent, useRef, useState} from "react"
 import type {User} from "@prisma/client"
 import Image from "next/image";
-import IconImage from "/public/image.svg"
 import UploadImageButton from "~/app/tweeter/_components/UploadImageButton";
 interface Prop {
     user?: User
@@ -10,7 +9,7 @@ interface Prop {
 export default function PostComment({user}:Prop) {
     const [commentValue, setCommentValue] = useState("")
     const commentRef = useRef<HTMLTextAreaElement>(null)
-
+    const [files, setFiles] = useState<File[]>([])
     const onChangeCommentValue = (e: ChangeEvent<HTMLTextAreaElement>) => {
         if( !commentRef || !commentRef.current ) return
         commentRef.current.style.height = "auto"
@@ -31,7 +30,7 @@ export default function PostComment({user}:Prop) {
                           placeholder={`Tweet your reply`}></textarea>
                 <div className={`flex flex-col`}>
                     <div className={`flex-grow`}/>
-                    <UploadImageButton iconClassName={`fill-font_light_gray`}/>
+                    <UploadImageButton setFiles={setFiles} iconClassName={`fill-font_light_gray`}/>
                     {/*make button on last line of textarea*/}
                     <div className={`h-[2px]`}/>
                 </div>

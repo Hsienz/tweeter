@@ -56,21 +56,11 @@ const procedures = {
             content: z.string().min(1).max(150), 
             files: z.string().array()
         })).mutation(async ({ ctx, input }) => {
-        const filenames = await Promise.all( input.files.map( x=>{
-            const filename = uuid() + ".png"
-            const command = new PutObjectCommand({
-                Bucket: process.env.AWS_BUCKET_NAME,
-                Key: filename,
-                Body: x
-            })
-            s3.send(command)
-            return filename
-        }))
         return ctx.db.post.create({
             data: {
                 createdBy: { connect: { id: ctx.session.user.id } },
                 content: input.content,
-                files: filenames
+                files: input.files
             },
         });
     }),

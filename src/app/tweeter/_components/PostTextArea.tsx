@@ -7,7 +7,6 @@ import {useState} from "react";
 import {api} from "~/trpc/react";
 import {ReplyType} from "@prisma/client";
 import UploadImageButton from "~/app/tweeter/_components/UploadImageButton";
-import {uploadFiles} from "~/app/utils/s3/upload";
 
 interface Prop {
     image : string
@@ -30,7 +29,17 @@ export default function PostTextArea( {image} : Prop) {
     })
 
     const OnClickTweetButton = async () => {
-        postCreateMutation.mutate({content: postContent, files: await Promise.all( files.map(async (x)=> await x.text()))})
+        const formData = new FormData()
+        files.forEach(x=>formData.append("files", x))
+        const res = await fetch('/api/s3/upload', {
+            method: 'POST',
+            body: formData,
+        })
+        const json = await res.json()
+        console.log(json)
+        
+        
+        postCreateMutation.mutate({content: postContent, files: json.filenames})
         setPostContent("")
         setFiles([])
     }
