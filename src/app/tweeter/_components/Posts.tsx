@@ -10,6 +10,9 @@ interface Prop {
 export default function Posts({user}:Prop) {
     const router = useRouter()
     const getSelfPostQuery = api.post.getSelfPost.useQuery()
+    useEffect(() => {
+        
+    }, []);
     return (
         <div className={`flex flex-col gap-y-6 my-6`}>
             {getSelfPostQuery.data?.map( x=>{ return <Post key={x.id} postData={x} user={user} />})}

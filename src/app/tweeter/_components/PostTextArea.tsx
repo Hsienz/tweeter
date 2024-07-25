@@ -3,10 +3,12 @@ import {poppins} from "../styles/fonts";
 import Image from "next/image";
 import Public from "/public/public.svg"
 import Group from "/public/group.svg"
-import {useState} from "react";
+import {Suspense, useState} from "react";
 import {api} from "~/trpc/react";
 import {ReplyType} from "@prisma/client";
 import UploadImageButton from "~/app/tweeter/_components/UploadImageButton";
+import Loading from "~/app/tweeter/loading";
+import Spinner from "~/app/tweeter/_loading/Spinner";
 
 interface Prop {
     image : string
@@ -20,15 +22,23 @@ export default function PostTextArea( {image} : Prop) {
     
     const [files,setFiles] = useState<File[]>([])
     
+    const [isUploading,setIsUploading] = useState<boolean>(false)
+    
     const postCreateMutation = api.post.post.useMutation({
         onSuccess() {
             console.log("Post Success")
             apiUtils.post.getSelfPost.invalidate()
+            setPostContent("")
+            setFiles([])
         },
+        onSettled() {
+            setIsUploading(false)
+        }
         
     })
 
     const OnClickTweetButton = async () => {
+        setIsUploading(true)
         const formData = new FormData()
         files.forEach(x=>formData.append("files", x))
         const res = await fetch('/api/s3/upload', {
@@ -38,10 +48,7 @@ export default function PostTextArea( {image} : Prop) {
         const json = await res.json()
         console.log(json)
         
-        
         postCreateMutation.mutate({content: postContent, files: json.filenames})
-        setPostContent("")
-        setFiles([])
     }
     
     return (
@@ -78,8 +85,9 @@ export default function PostTextArea( {image} : Prop) {
                         </button>
                         }
 
-                        <button className={`ml-auto rounded-md bg-icon_blue text-white p-2`} onClick={OnClickTweetButton}>
-                            Tweet
+                        <button className={`relative ml-auto rounded-md bg-icon_blue text-white p-2`} onClick={OnClickTweetButton} disabled={isUploading}>
+                            <span className={`${isUploading ? "invisible" : ""}`}>Tweet</span>
+                            {isUploading && <Spinner/>}
                         </button>
                     </div>
                 </div>

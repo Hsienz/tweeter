@@ -42,6 +42,12 @@ const config = {
                 hostname: 'cdn.discordapp.com',
                 port: '',
                 pathname: '/**',
+            },
+            {
+                protocol: 'https',
+                hostname: 'tweeter-b6490472449728a301e6953dba8904dd.s3.ap-southeast-2.amazonaws.com',
+                port: '',
+                pathname: '/**'
             }
         ]
     }

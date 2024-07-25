@@ -1,4 +1,5 @@
-﻿import {api} from "~/trpc/react";
+﻿"use client"
+import {api} from "~/trpc/react";
 import Image from "next/image";
 import {Prisma} from "@prisma/client";
 import {poppins,noto_sans} from "~/app/tweeter/styles/fonts";
@@ -8,6 +9,8 @@ import CommentFunctionButton from "~/app/tweeter/_components/PostFunctionalButto
 import RetweetFunctionButton from "~/app/tweeter/_components/PostFunctionalButton/RetweetFunctionButton";
 import LikeFunctionButton from "~/app/tweeter/_components/PostFunctionalButton/LikeFunctionButton";
 import BookmarkFunctionButton from "~/app/tweeter/_components/PostFunctionalButton/BookmarkFunctionButton";
+import {useEffect, useState} from "react";
+import Spinner from "~/app/tweeter/_loading/Spinner";
 type PostDataType = Prisma.PostGetPayload<{
     include: {
         createdBy: true
@@ -23,6 +26,30 @@ function Post( {user, postData}:Prop ) {
     const saveCount = api.post.getSaveCount.useQuery({postId: postData.id})
     const retweetCount = api.post.getRetweetCount.useQuery({postId: postData.id})
     const commentCount = api.post.getCommentCount.useQuery({postId: postData.id})
+    const [files,setFiles] = useState<string[]>([])
+    const [isFileLoading, setIsFileLoading] = useState<boolean>(false)
+    const getFiles = async () => {
+        const params = new URLSearchParams()
+        postData.files.forEach(x=>{
+            params.append("files", x)
+        })
+        
+        const res = await fetch(`/api/s3/getFiles?${params.toString()}`, {
+            method: "GET",
+        })
+        const json = await res.json()
+        console.log(json)
+        return json.files
+    }
+    useEffect(() => {
+        const f = async () => {
+            setIsFileLoading(true)
+            setFiles(await getFiles())
+            console.log("from effect")
+            console.log(files)
+        }
+        f()
+    }, []);
     return (
         <div className={`w-full rounded-2xl bg-white p-4`}>
             <div className={`flex`}>
@@ -37,6 +64,16 @@ function Post( {user, postData}:Prop ) {
             <div className={`my-6 text-font_dark_gray`}>
                 {postData.content}
             </div>
+            { (files && files[0]) &&
+                <div className={`relative`}>
+                    {isFileLoading && <Spinner/>}
+                <Image
+                src={files[0]}
+                alt={""} width={100} height={100}
+                onLoadingComplete={()=>{setIsFileLoading(false)}}
+                />
+                </div>
+            }
             <div className={`flex gap-x-4 justify-end text-font_light_gray text-xs`}>
                 <span>{`${commentCount.data} Comment${commentCount.data && commentCount.data > 1 ? "s" : ""}`}</span>
                 <span>{`${retweetCount.data} Retweet${retweetCount.data && retweetCount.data > 1 ? "s" : ""}`}</span>

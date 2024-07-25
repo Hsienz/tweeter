@@ -2,6 +2,7 @@
 import {NextRequest, NextResponse} from "next/server";
 import {PutObjectCommand} from "@aws-sdk/client-s3";
 import {v4 as uuid} from "uuid"
+import fs from "fs"
 const handler = async (req:NextRequest) => {
     const formData = await req.formData()
     const files = formData.getAll("files")
@@ -10,10 +11,11 @@ const handler = async (req:NextRequest) => {
         if( x instanceof File) {
             const ext = x.name.split('.').pop()
             const filename = uuid() + (ext ? "."+ext : "")
+            const ab = await x.arrayBuffer()
             const command = new PutObjectCommand({
                 Key: filename,
                 Bucket: process.env.AWS_BUCKET_NAME,
-                Body: await x.text()
+                Body: new Uint8Array(ab)
             })
             const uploadedFile = await s3.send(command)
             console.log(uploadedFile)
