@@ -18,7 +18,7 @@ export default function PostFunctionButtonBase({Icon,isEnable,textDisable,textEn
     return (
         <button onClick={handleOnClick} className={`basis-0 flex-grow py-2 rounded-md hover:bg-background_gray flex gap-x-2 justify-center justify-items-center`}>
             <Icon width={16} height={16} className={`my-auto transition-all duration-500 ${isEnable && iconClassNameEnable ? iconClassNameEnable : "fill-font_dark_gray"}`}/>
-            <span className={`text-sm hidden sm:inline transition-all duration-500 ${isEnable && textClassNameEnable ? textClassNameEnable : "text-font_dark_gray"}`}>{isEnable ? textEnable : textDisable}</span>
+            <span className={`text-sm hidden lg:inline transition-all duration-500 ${isEnable && textClassNameEnable ? textClassNameEnable : "text-font_dark_gray"}`}>{isEnable ? textEnable : textDisable}</span>
         </button>
     )
 }

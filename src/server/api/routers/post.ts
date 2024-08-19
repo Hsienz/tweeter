@@ -3,6 +3,7 @@ import {z} from "zod";
 import {createTRPCRouter, protectedProcedure, publicProcedure,} from "~/server/api/trpc";
 import {PutObjectCommand, S3Client} from "@aws-sdk/client-s3";
 import {v4 as uuid} from "uuid"
+import {ReplyType} from "@prisma/client";
 const s3 = new S3Client([{
     region: process.env.AWS_REGION,
     credentials:{
@@ -19,14 +20,35 @@ const procedures = {
             orderBy: {createdAt: "desc"}
         });
     }),
-  getAllPost: protectedProcedure.input( z.object({ userId: z.string() }))
+  getUserTweets: protectedProcedure.input( z.object({ userId: z.string() }))
       .query(async ({ctx,input})=>{
+        return ctx.db.post.findMany({
+            where: {createdById: input.userId, OR: [{parentId: null}, {parentId: undefined}]},
+            include: {createdBy: true},
+            orderBy: {createdAt: "desc"}
+        });
+  }), 
+    getUserTweetsAndReplies: protectedProcedure.input( z.object({userId: z.string()})).query(async ({ctx,input})=>{
         return ctx.db.post.findMany({
             where: {createdById: input.userId},
             include: {createdBy: true},
             orderBy: {createdAt: "desc"}
-        });
-  }),
+        })
+    }),
+    getUserMedia: protectedProcedure.input( z.object({userId: z.string()})).query(async ({ctx,input})=>{
+        return ctx.db.post.findMany({
+            where: {createdById: input.userId, files:{isEmpty:false}},
+            include: {createdBy: true},
+            orderBy: {createdAt: "desc"}
+        })
+    }),
+    getUserLikes: protectedProcedure.input( z.object({userId: z.string()})).query(async ({ctx,input})=>{
+        return ctx.db.post.findMany({
+            where: { likedUsers: {some: {userId: input.userId}}},
+            include: {createdBy: true},
+            orderBy: {createdAt: "desc"}
+        })
+    }),
   getFollowingUserPost: protectedProcedure.query(async ({ctx})=>{
       const user = await ctx.db.user.findFirst(
           {

@@ -63,17 +63,18 @@ function Post( {user, postData}:Prop ) {
             </div>
             <div className={`my-6 text-font_dark_gray`}>
                 {postData.content}
-            </div>
             { (files && files[0]) &&
-                <div className={`relative`}>
+                <div className={`relative mt-4`}>
                     {isFileLoading && <Spinner/>}
                 <Image
                 src={files[0]}
-                alt={""} width={100} height={100}
+                alt={""} width={1200} height={0}
+                className={`w-full rounded-md`}
                 onLoadingComplete={()=>{setIsFileLoading(false)}}
                 />
                 </div>
             }
+            </div>
             <div className={`flex gap-x-4 justify-end text-font_light_gray text-xs`}>
                 <span>{`${commentCount.data} Comment${commentCount.data && commentCount.data > 1 ? "s" : ""}`}</span>
                 <span>{`${retweetCount.data} Retweet${retweetCount.data && retweetCount.data > 1 ? "s" : ""}`}</span>

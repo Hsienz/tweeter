@@ -6,26 +6,29 @@ import {api} from "~/trpc/react";
 import TestButton from "~/app/tweeter/_components/TestButton";
 import Posts from "~/app/tweeter/_components/Posts";
 import {getServerAuthSession} from "~/server/auth";
+import SubNav from "~/app/tweeter/_components/SubNav";
 
 export default async function TweeterPage() {
     const session = await getServerAuthSession()
     return (
         <div className={`h-fit h-min-screen relative flex flex-col bg-background_gray`}>
+                {/*<div className={`h-16 fixed w-full top-full -translate-y-full z-10`}>*/}
+                {/*    <MainNav/>*/}
+                {/*</div>*/}
             <div>
                 <TopBanner/>
             </div>
-            <div className={`mt-8`}>
-                <div className={`w-11/12 max-w-[745px] mx-auto`}>
-                    <PostTextArea image={ session?.user.image || ""}/>
-                </div>
-                <div className={`flex flex-col sm:flex-col-reverse h-full`}>
-                    <div className={`w-11/12 max-w-[745px] mx-auto`}>
-                        { /*@ts-ignore*/ }
-                        <Posts user={{...session?.user, emailVerified: null}}/>
+            <div className={`my-20 flex flex-col sm:flex-row mx-auto w-11/12 max-w-[1024px] gap-x-8 gap-y-4`}>
+                <SubNav/>
+                <div className={`flex-grow`}>
+                    <div className={`mx-auto`}>
+                        <PostTextArea image={ session?.user.image || ""}/>
                     </div>
-                    
-                    <div className={`sm:hidden mt-auto h-20`}>
-                        <MainNav/>
+                    <div className={`flex flex-col sm:flex-col-reverse`}>
+                        <div className={`w-full mx-auto`}>
+                            { /*@ts-ignore*/ }
+                            <Posts user={{...session?.user, emailVerified: null}}/>
+                        </div>
                     </div>
                 </div>
             </div>
