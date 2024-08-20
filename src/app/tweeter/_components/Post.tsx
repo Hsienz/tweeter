@@ -11,7 +11,7 @@ import LikeFunctionButton from "~/app/tweeter/_components/PostFunctionalButton/L
 import BookmarkFunctionButton from "~/app/tweeter/_components/PostFunctionalButton/BookmarkFunctionButton";
 import {useEffect, useState} from "react";
 import Spinner from "~/app/tweeter/_loading/Spinner";
-type PostDataType = Prisma.PostGetPayload<{
+export type PostDataType = Prisma.PostGetPayload<{
     include: {
         createdBy: true
     }

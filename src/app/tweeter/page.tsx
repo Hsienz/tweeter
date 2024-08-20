@@ -26,8 +26,7 @@ export default async function TweeterPage() {
                     </div>
                     <div className={`flex flex-col sm:flex-col-reverse`}>
                         <div className={`w-full mx-auto`}>
-                            { /*@ts-ignore*/ }
-                            <Posts user={{...session?.user, emailVerified: null}}/>
+                            {session && <Posts userId={session.user.id}/>}
                         </div>
                     </div>
                 </div>

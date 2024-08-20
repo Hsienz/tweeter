@@ -14,5 +14,9 @@ export const userRouter = createTRPCRouter({
             })
     }),
     
+    get: protectedProcedure.input(z.object({userId: z.string()})).query(async ({input, ctx}) => {
+        return ctx.db.user.findFirst({where: {id: input.userId}});
+    })
+    
     
 })
